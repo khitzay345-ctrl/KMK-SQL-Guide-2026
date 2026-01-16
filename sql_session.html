@@ -1674,6 +1674,12 @@
 
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
+      // Spacebar for next page
+      if (e.key === ' ' && !e.target.matches('input, textarea')) {
+        e.preventDefault();
+        nextPage();
+      }
+      
       // F11 for fullscreen
       if (e.key === 'F11') {
         e.preventDefault();

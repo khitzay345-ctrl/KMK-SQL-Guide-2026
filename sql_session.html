@@ -244,6 +244,7 @@
     /* Smooth transitions for theme changes */
     body {
       transition: background 0.5s ease;
+      zoom: 115%;
     }
 
     .welcome-card {
@@ -589,7 +590,7 @@
     }
   </style>
 </head>
-<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen flex flex-col theme-ocean">
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen flex flex-col theme-fire">
 
   <!-- Running Cartoons -->
   <div class="cartoon-container">
@@ -601,10 +602,10 @@
 
   <!-- Theme Switcher -->
   <div class="theme-switcher">
-    <div class="theme-btn active theme-ocean" onclick="setTheme('ocean')" title="Ocean"></div>
+    <div class="theme-btn theme-ocean" onclick="setTheme('ocean')" title="Ocean"></div>
     <div class="theme-btn theme-sunset" onclick="setTheme('sunset')" title="Sunset"></div>
     <div class="theme-btn theme-forest" onclick="setTheme('forest')" title="Forest"></div>
-    <div class="theme-btn theme-fire" onclick="setTheme('fire')" title="Fire"></div>
+    <div class="theme-btn active theme-fire" onclick="setTheme('fire')" title="Fire"></div>
     <div class="theme-btn theme-aurora" onclick="setTheme('aurora')" title="Aurora"></div>
     <div class="theme-btn theme-galaxy" onclick="setTheme('galaxy')" title="Galaxy"></div>
     <div class="theme-btn theme-candy" onclick="setTheme('candy')" title="Candy"></div>
@@ -1573,7 +1574,7 @@
     window.toggleFullscreen = toggleFullscreen;
 
     // Theme management
-    let currentTheme = 'ocean';
+    let currentTheme = 'fire';
 
     function setTheme(theme) {
       const body = document.body;

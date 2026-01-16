@@ -231,8 +231,12 @@
         
         let markdownText = await response.text();
         
-        // Initialize Mermaid
-        mermaid.initialize({ startOnLoad: false });
+        // Initialize Mermaid with proper configuration
+        mermaid.initialize({ 
+          startOnLoad: false,
+          theme: 'default',
+          securityLevel: 'loose'
+        });
         
         // Configure marked options
         marked.setOptions({
@@ -249,22 +253,17 @@
         // Convert markdown to HTML
         let htmlContent = marked.parse(markdownText);
         
-        // Process Mermaid diagrams
-        htmlContent = htmlContent.replace(/```mermaid\n([\s\S]*?)\n```/g, function(match, code) {
+        // Process Mermaid diagrams - improved regex
+        htmlContent = htmlContent.replace(/```mermaid\s*\n([\s\S]*?)\n```/gs, function(match, code) {
           try {
             const id = 'mermaid-' + Math.random().toString(36).substr(2, 9);
-            mermaid.render(id, code.trim()).then((result) => {
-              const element = document.getElementById(id);
-              if (element) {
-                element.innerHTML = result.svg;
-              }
-            }).catch((error) => {
-              console.error('Mermaid rendering error:', error);
-            });
-            return `<div class="mermaid" id="${id}">Loading diagram...</div>`;
+            const cleanCode = code.trim();
+            
+            // Render immediately and return the result
+            return `<div class="mermaid" id="${id}">${cleanCode}</div>`;
           } catch (error) {
             console.error('Mermaid processing error:', error);
-            return `<div class="error">Error rendering diagram</div>`;
+            return `<div class="error">Error rendering diagram: ${error.message}</div>`;
           }
         });
         
@@ -275,7 +274,7 @@
           </div>
         `;
         
-        // Render all Mermaid diagrams
+        // Render all Mermaid diagrams after DOM is ready
         setTimeout(() => {
           mermaid.run().catch(error => {
             console.error('Mermaid run error:', error);

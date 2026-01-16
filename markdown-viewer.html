@@ -9,6 +9,7 @@
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
   <style>
     body {
       font-family: 'Segoe UI', system-ui, sans-serif;
@@ -105,6 +106,15 @@
       overflow-x: auto;
       margin: 1rem 0;
       font-size: 0.9rem;
+    }
+    
+    .markdown-content .mermaid {
+      background: white;
+      border-radius: 8px;
+      padding: 1rem;
+      margin: 1rem 0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      text-align: center;
     }
     
     .markdown-content ul, .markdown-content ol {
@@ -211,7 +221,7 @@
   </div>
 
   <script>
-    // Fetch and render the markdown file
+    // Fetch and render markdown file
     async function loadMarkdown() {
       try {
         const response = await fetch('Database Management Systems and SQL.md');
@@ -219,7 +229,10 @@
           throw new Error('Could not load markdown file');
         }
         
-        const markdownText = await response.text();
+        let markdownText = await response.text();
+        
+        // Initialize Mermaid
+        mermaid.initialize({ startOnLoad: false });
         
         // Configure marked options
         marked.setOptions({
@@ -234,14 +247,40 @@
         });
         
         // Convert markdown to HTML
-        const htmlContent = marked.parse(markdownText);
+        let htmlContent = marked.parse(markdownText);
         
-        // Display the content
+        // Process Mermaid diagrams
+        htmlContent = htmlContent.replace(/```mermaid\n([\s\S]*?)\n```/g, function(match, code) {
+          try {
+            const id = 'mermaid-' + Math.random().toString(36).substr(2, 9);
+            mermaid.render(id, code.trim()).then((result) => {
+              const element = document.getElementById(id);
+              if (element) {
+                element.innerHTML = result.svg;
+              }
+            }).catch((error) => {
+              console.error('Mermaid rendering error:', error);
+            });
+            return `<div class="mermaid" id="${id}">Loading diagram...</div>`;
+          } catch (error) {
+            console.error('Mermaid processing error:', error);
+            return `<div class="error">Error rendering diagram</div>`;
+          }
+        });
+        
+        // Display content
         document.getElementById('content').innerHTML = `
           <div class="markdown-content">
             ${htmlContent}
           </div>
         `;
+        
+        // Render all Mermaid diagrams
+        setTimeout(() => {
+          mermaid.run().catch(error => {
+            console.error('Mermaid run error:', error);
+          });
+        }, 100);
         
         // Highlight code blocks
         Prism.highlightAll();
@@ -252,7 +291,7 @@
           <div class="error">
             <i class="fas fa-exclamation-triangle text-4xl mb-4"></i>
             <h2 class="text-2xl font-bold mb-2">Error Loading Content</h2>
-            <p>Could not load the markdown file. Please check if the file exists and try again.</p>
+            <p>Could not load markdown file. Please check if the file exists and try again.</p>
             <p class="text-sm mt-4">Error: ${error.message}</p>
             <div class="mt-4">
               <a href="sql_session.html" class="back-btn">

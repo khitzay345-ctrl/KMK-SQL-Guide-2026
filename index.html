@@ -8,11 +8,101 @@
     // Auto-redirect to the main page
     window.location.href = "sql_session.html";
   </script>
+  <style>
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+    }
+    .redirect-container {
+      text-align: center;
+      padding: 50px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+    .redirect-container h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: white;
+    }
+    .redirect-container p {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      opacity: 0.9;
+    }
+    .button-group {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .nav-button {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      padding: 1rem 2rem;
+      border-radius: 30px;
+      text-decoration: none;
+      font-size: 1rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(5px);
+    }
+    .nav-button:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+    .nav-button.primary {
+      background: linear-gradient(135deg, #667eea, #5a67d8);
+      border-color: transparent;
+    }
+    .nav-button.primary:hover {
+      background: linear-gradient(135deg, #5a67d8, #4c51bf);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    }
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 10px;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
 </head>
 <body>
-  <div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
-    <h1>Redirecting to KMK SQL Guide...</h1>
-    <p>If you are not redirected automatically, <a href="sql_session.html">click here</a>.</p>
+  <div class="redirect-container">
+    <h1><i class="fas fa-database"></i> KMK SQL Guide 2026</h1>
+    <p>Choose your learning experience:</p>
+    
+    <div class="button-group">
+      <a href="sql_session.html" class="nav-button primary">
+        <i class="fas fa-play"></i> Interactive Guide
+      </a>
+      <a href="markdown-viewer.html" class="nav-button">
+        <i class="fas fa-book-open"></i> Study Material
+      </a>
+    </div>
+    
+    <div style="margin-top: 2rem; opacity: 0.7;">
+      <div class="spinner"></div>
+      <span>Auto-redirecting to Interactive Guide...</span>
+    </div>
   </div>
 </body>
 </html>

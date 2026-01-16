@@ -1,0 +1,1725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DBMS & SQL Guide</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ startOnLoad: false, theme: 'default' });
+    window.mermaid = mermaid;
+  </script>
+  <style>
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      scroll-behavior: smooth;
+    }
+    .mermaid {
+      margin: 1.5rem 0;
+    }
+    .prose h3 {
+      font-weight: 600;
+      color: #4f46e5;
+    }
+    .prose pre {
+      background-color: #1f2937 !important;
+      color: #a7f3d0 !important;
+      padding: 1rem !important;
+      border-radius: 0.5rem;
+      overflow-x: auto;
+    }
+    .timeline-item {
+      position: relative;
+      padding-left: 2rem;
+      margin-bottom: 1.5rem;
+    }
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.5rem;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background-color: #4f46e5;
+    }
+    .timeline-item::after {
+      content: '';
+      position: absolute;
+      left: 5px;
+      top: 1.25rem;
+      width: 2px;
+      height: calc(100% + 1rem);
+      background-color: #e0e7ff;
+    }
+    .timeline-item:last-child::after {
+      display: none;
+    }
+
+    /* Fade-in animation */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in {
+      animation: fadeIn 0.6s ease-out forwards;
+    }
+
+    .card-hover {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card-hover:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+    }
+
+    .feature-icon {
+      transition: transform 0.3s ease;
+    }
+    .feature-icon:hover {
+      transform: scale(1.1);
+    }
+    
+    .welcome-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    /* Full screen styles */
+    .fullscreen-mode {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 9999;
+      overflow-y: auto;
+    }
+
+    .fullscreen-mode header {
+      display: none;
+    }
+
+    .fullscreen-mode footer {
+      display: none;
+    }
+
+    .fullscreen-mode main {
+      max-width: 100% !important;
+      padding: 2rem !important;
+    }
+
+    .fullscreen-mode aside {
+      display: none !important;
+    }
+
+    .fullscreen-mode .flex-grow {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Theme switcher styles */
+    .theme-switcher {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      background: white;
+      border-radius: 12px;
+      padding: 8px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      display: flex;
+      gap: 8px;
+    }
+
+    .theme-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .theme-btn:hover {
+      transform: scale(1.1);
+      border-color: #333;
+    }
+
+    .theme-btn.active {
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+    }
+
+    /* Full screen toggle button */
+    .fullscreen-toggle {
+      position: fixed;
+      top: 20px;
+      right: 180px;
+      z-index: 1000;
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+    }
+
+    .fullscreen-toggle:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+    }
+
+    /* Gradient themes */
+    .theme-ocean {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .theme-sunset {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    .theme-forest {
+      background: linear-gradient(135deg, #0ba360 0%, #3cba92 100%);
+    }
+
+    .theme-fire {
+      background: linear-gradient(135deg, #f83600 0%, #f9d423 100%);
+    }
+
+    .theme-aurora {
+      background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 50%, #00d2ff 100%);
+    }
+
+    .theme-galaxy {
+      background: linear-gradient(135deg, #654ea3 0%, #eaafc8 100%);
+    }
+
+    .theme-candy {
+      background: linear-gradient(135deg, #ff6ec7 0%, #7873f5 50%, #4fc3f7 100%);
+    }
+
+    .theme-midnight {
+      background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+    }
+
+    /* Theme-specific welcome card colors */
+    .theme-sunset .welcome-card {
+      background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
+    }
+
+    .theme-forest .welcome-card {
+      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    }
+
+    .theme-fire .welcome-card {
+      background: linear-gradient(135deg, #ff4757 0%, #ffa502 100%);
+    }
+
+    .theme-aurora .welcome-card {
+      background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+    }
+
+    .theme-galaxy .welcome-card {
+      background: linear-gradient(135deg, #654ea3 0%, #eaafc8 100%);
+    }
+
+    .theme-candy .welcome-card {
+      background: linear-gradient(135deg, #ff6ec7 0%, #7873f5 50%, #4fc3f7 100%);
+    }
+
+    .theme-midnight .welcome-card {
+      background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+    }
+
+    /* Smooth transitions for theme changes */
+    body {
+      transition: background 0.5s ease;
+    }
+
+    .welcome-card {
+      transition: background 0.5s ease;
+    }
+
+    /* Cartoon animations */
+    .cartoon-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 80px;
+      pointer-events: none;
+      z-index: 999;
+      overflow: hidden;
+    }
+
+    .cartoon {
+      position: absolute;
+      font-size: 35px;
+      animation: runJump 6s linear infinite;
+      filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+    }
+
+    .cartoon:nth-child(1) {
+      animation-delay: 0s;
+      top: 15px;
+    }
+
+    .cartoon:nth-child(2) {
+      animation-delay: 1.5s;
+      top: 35px;
+    }
+
+    .cartoon:nth-child(3) {
+      animation-delay: 3s;
+      top: 20px;
+    }
+
+    .cartoon:nth-child(4) {
+      animation-delay: 4.5s;
+      top: 45px;
+    }
+
+    @keyframes runJump {
+      0% {
+        left: -60px;
+        transform: translateY(0) scaleX(1) rotate(0deg);
+      }
+      5% {
+        transform: translateY(-5px) scaleX(1.05) rotate(-2deg);
+      }
+      10% {
+        transform: translateY(-8px) scaleX(1.1) rotate(-5deg);
+      }
+      15% {
+        transform: translateY(-12px) scaleX(1.15) rotate(-8deg);
+      }
+      20% {
+        transform: translateY(-15px) scaleX(1.2) rotate(-10deg);
+      }
+      25% {
+        transform: translateY(-18px) scaleX(1.15) rotate(-8deg);
+      }
+      30% {
+        transform: translateY(-20px) scaleX(1.1) rotate(-5deg);
+      }
+      35% {
+        transform: translateY(-18px) scaleX(1.05) rotate(-2deg);
+      }
+      40% {
+        transform: translateY(-15px) scaleX(1) rotate(0deg);
+      }
+      45% {
+        transform: translateY(-12px) scaleX(0.95) rotate(2deg);
+      }
+      50% {
+        transform: translateY(-8px) scaleX(0.9) rotate(5deg);
+      }
+      55% {
+        transform: translateY(-5px) scaleX(0.95) rotate(8deg);
+      }
+      60% {
+        transform: translateY(0) scaleX(1) rotate(10deg);
+      }
+      65% {
+        transform: translateY(-5px) scaleX(1.05) rotate(8deg);
+      }
+      70% {
+        transform: translateY(-10px) scaleX(1.1) rotate(5deg);
+      }
+      75% {
+        transform: translateY(-15px) scaleX(1.15) rotate(2deg);
+      }
+      80% {
+        transform: translateY(-20px) scaleX(1.2) rotate(0deg);
+      }
+      85% {
+        transform: translateY(-15px) scaleX(1.15) rotate(-2deg);
+      }
+      90% {
+        transform: translateY(-10px) scaleX(1.1) rotate(-5deg);
+      }
+      95% {
+        transform: translateY(-5px) scaleX(1.05) rotate(-8deg);
+      }
+      100% {
+        left: 100%;
+        transform: translateY(0) scaleX(1) rotate(-10deg);
+      }
+    }
+
+    /* Additional running animation for more dynamic movement */
+    .cartoon::before {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 30px;
+      height: 3px;
+      background: rgba(0,0,0,0.2);
+      border-radius: 50%;
+      animation: shadow 0.5s ease-in-out infinite alternate;
+    }
+
+    @keyframes shadow {
+      0% {
+        width: 25px;
+        opacity: 0.3;
+      }
+      100% {
+        width: 35px;
+        opacity: 0.6;
+      }
+    }
+
+    /* Thank you page animations */
+    .thank-you-container {
+      text-align: center;
+      padding: 3rem 0;
+    }
+
+    .thank-you-title {
+      font-size: 4rem;
+      font-weight: bold;
+      background: linear-gradient(45deg, #667eea, #764ba2, #f093fb, #f5576c);
+      background-size: 300% 300%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: gradientShift 3s ease-in-out infinite;
+      margin-bottom: 2rem;
+    }
+
+    @keyframes gradientShift {
+      0%, 100% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+    }
+
+    .floating-emoji {
+      display: inline-block;
+      font-size: 3rem;
+      animation: float 3s ease-in-out infinite;
+      margin: 0 1rem;
+    }
+
+    .floating-emoji:nth-child(1) {
+      animation-delay: 0s;
+    }
+
+    .floating-emoji:nth-child(2) {
+      animation-delay: 0.5s;
+    }
+
+    .floating-emoji:nth-child(3) {
+      animation-delay: 1s;
+    }
+
+    .floating-emoji:nth-child(4) {
+      animation-delay: 1.5s;
+    }
+
+    .floating-emoji:nth-child(5) {
+      animation-delay: 2s;
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0px) rotate(0deg);
+      }
+      50% {
+        transform: translateY(-20px) rotate(10deg);
+      }
+    }
+
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #f9ca24);
+      animation: confettiFall 3s linear infinite;
+    }
+
+    .confetti:nth-child(1) {
+      left: 10%;
+      animation-delay: 0s;
+      background: #ff6b6b;
+    }
+
+    .confetti:nth-child(2) {
+      left: 20%;
+      animation-delay: 0.5s;
+      background: #4ecdc4;
+    }
+
+    .confetti:nth-child(3) {
+      left: 30%;
+      animation-delay: 1s;
+      background: #45b7d1;
+    }
+
+    .confetti:nth-child(4) {
+      left: 40%;
+      animation-delay: 1.5s;
+      background: #f9ca24;
+    }
+
+    .confetti:nth-child(5) {
+      left: 50%;
+      animation-delay: 2s;
+      background: #ff6b6b;
+    }
+
+    .confetti:nth-child(6) {
+      left: 60%;
+      animation-delay: 2.5s;
+      background: #4ecdc4;
+    }
+
+    .confetti:nth-child(7) {
+      left: 70%;
+      animation-delay: 0.3s;
+      background: #45b7d1;
+    }
+
+    .confetti:nth-child(8) {
+      left: 80%;
+      animation-delay: 0.8s;
+      background: #f9ca24;
+    }
+
+    .confetti:nth-child(9) {
+      left: 90%;
+      animation-delay: 1.3s;
+      background: #ff6b6b;
+    }
+
+    @keyframes confettiFall {
+      0% {
+        top: -10px;
+        transform: rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        top: 100%;
+        transform: rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    .pulse-button {
+      display: inline-block;
+      padding: 1rem 2rem;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      animation: pulse 2s infinite;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      margin: 1rem;
+    }
+
+    .pulse-button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+    }
+
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7);
+      }
+      70% {
+        box-shadow: 0 0 0 20px rgba(102, 126, 234, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(102, 126, 234, 0);
+      }
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      text-align: center;
+      transform: translateY(0);
+      transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+    }
+
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #667eea;
+      display: block;
+    }
+
+    .stat-label {
+      color: #666;
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen flex flex-col theme-ocean">
+
+  <!-- Running Cartoons -->
+  <div class="cartoon-container">
+    <div class="cartoon">🏃‍♂️</div>
+    <div class="cartoon">🤸‍♀️</div>
+    <div class="cartoon">🏃‍♀️</div>
+    <div class="cartoon">🤸‍♂️</div>
+  </div>
+
+  <!-- Theme Switcher -->
+  <div class="theme-switcher">
+    <div class="theme-btn active theme-ocean" onclick="setTheme('ocean')" title="Ocean"></div>
+    <div class="theme-btn theme-sunset" onclick="setTheme('sunset')" title="Sunset"></div>
+    <div class="theme-btn theme-forest" onclick="setTheme('forest')" title="Forest"></div>
+    <div class="theme-btn theme-fire" onclick="setTheme('fire')" title="Fire"></div>
+    <div class="theme-btn theme-aurora" onclick="setTheme('aurora')" title="Aurora"></div>
+    <div class="theme-btn theme-galaxy" onclick="setTheme('galaxy')" title="Galaxy"></div>
+    <div class="theme-btn theme-candy" onclick="setTheme('candy')" title="Candy"></div>
+    <div class="theme-btn theme-midnight" onclick="setTheme('midnight')" title="Midnight"></div>
+  </div>
+
+  <!-- Full Screen Toggle -->
+  <button class="fullscreen-toggle" onclick="toggleFullscreen()">
+    <i class="fas fa-expand" id="fullscreen-icon"></i>
+    <span id="fullscreen-text">Full Screen</span>
+  </button>
+
+  <!-- Header -->
+  <header class="bg-white shadow-sm sticky top-0 z-10">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+      <h1 class="text-xl font-bold text-indigo-700">DBMS & SQL Guide</h1>
+      <button id="menu-toggle" class="md:hidden p-2 rounded-md hover:bg-gray-100">
+        <i class="fas fa-bars text-lg"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Mobile Menu -->
+  <div id="mobile-menu" class="hidden md:hidden bg-white shadow-lg max-h-64 overflow-y-auto">
+    <div class="px-4 py-2 space-y-1" id="menu-list">
+      <!-- Dynamically populated -->
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main class="flex-grow flex flex-col md:flex-row max-w-6xl mx-auto w-full px-4 py-6">
+    <!-- Sidebar (Desktop) -->
+    <aside class="hidden md:block w-64 flex-shrink-0 pr-6">
+      <nav class="sticky top-24 h-[calc(100vh-12rem)] overflow-y-auto bg-white rounded-lg shadow p-4">
+        <h2 class="font-semibold text-gray-700 mb-3">Contents</h2>
+        <ul class="space-y-1" id="sidebar-list">
+          <!-- Dynamically populated -->
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Content Area -->
+    <div class="flex-grow">
+      <div class="bg-white rounded-xl shadow-lg p-6 md:p-8" id="content-area">
+        <!-- Dynamically loaded -->
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t mt-8 py-4 text-center text-gray-500 text-sm">
+    DBMS & SQL Knowledge Base • Interactive Presentation
+  </footer>
+
+  <script>
+    // Mermaid diagrams as strings
+    const mermaidDiagrams = {
+      databaseUsers: `graph LR
+    User((Users)) --> AP[Application Programmers: DML Calls]
+    User --> SU[Sophisticated Users: Query Language]
+    User --> SP[Specialized Users: Specialized Apps]
+    User --> NU[Naïve Users: Existing Programs]`,
+      
+      twoThreeTier: `graph TD
+    subgraph "Two-Tier"
+    C1[User/Application Client] -- "Network (Direct)" --- DB1[(Database System)]
+    end
+
+    subgraph "Three-Tier"
+    C2[User/Client] -- "Network" --- AS[Application Server / Middleware]
+    AS -- "Network" --- DB2[(Database System)]
+    end`,
+      
+      systemStructure: `graph TD
+    DBA[Database Administrator] -- "Uses" --> AT[Administration Tools]
+    AT -- "Executes" --> DDL[DDL Interpreter]
+    DDL -- "Updates" --> DD[Data Dictionary]
+    
+    subgraph "Storage Management"
+    DD
+    Data[(Data Storage)]
+    end
+    
+    style DBA fill:#f39c12,stroke:#333,stroke-width:4px`,
+      
+      ddlDml: `graph TD
+    SQL[SQL Languages]
+    SQL --> DDL[DDL: Structure]
+    SQL --> DML[DML: Data Content]
+    
+    DDL --> C1[CREATE]
+    DDL --> C2[ALTER]
+    DDL --> C3[DROP]
+    
+    DML --> M1[SELECT]
+    DML --> M2[INSERT]
+    DML --> M3[UPDATE]
+    DML --> M4[DELETE]`,
+      
+      normalization: `graph TD
+    Un[Unnormalized Data] -->|Atomic Values| NF1[1NF]
+    NF1 -->|Remove Partial Dependency| NF2[2NF]
+    NF2 -->|Remove Transitive Dependency| NF3[3NF]
+    style NF3 fill:#2ecc71,stroke:#333,stroke-width:2px`,
+      
+      sqlWorkflow: `graph TD
+    S1[FROM: Table ကိုအရင်ရွေး] --> S2[WHERE: Row တွေကို Filter လုပ်]
+    S2 --> S3[GROUP BY: အုပ်စုဖွဲ့]
+    S3 --> S4[HAVING: အုပ်စုလိုက် Filter ထပ်လုပ်]
+    S4 --> S5[SELECT: Column တွေထုတ်ပြ]
+    S5 --> S6[ORDER BY: အစဉ်လိုက်စီ]`
+    };
+
+    // All pages with welcome page and updated images
+    const pages = [
+      {
+        title: "Welcome",
+        content: `
+          <div class="fade-in text-center py-8">
+            <div class="welcome-card rounded-2xl p-8 mb-6 shadow-xl">
+              <div class="w-32 h-32 bg-white bg-opacity-80 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-database text-6xl text-white"></i>
+              </div>
+              <h2 class="text-3xl font-bold mb-2">Welcome to DBMS & SQL Guide</h2>
+              <p class="text-xl opacity-90">Presented by</p>
+              <h3 class="text-2xl font-bold mt-2">Kaung Myat Kyaw</h3>
+              <p class="text-lg opacity-90">BI Executive</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
+              <div class="bg-blue-50 p-4 rounded-lg card-hover">
+                <i class="fas fa-book-open text-blue-600 text-2xl mb-2"></i>
+                <h4 class="font-bold">Comprehensive Learning</h4>
+                <p>Covering all DBMS fundamentals</p>
+              </div>
+              <div class="bg-green-50 p-4 rounded-lg card-hover">
+                <i class="fas fa-code text-green-600 text-2xl mb-2"></i>
+                <h4 class="font-bold">Hands-on Practice</h4>
+                <p>Real SQL examples and exercises</p>
+              </div>
+              <div class="bg-purple-50 p-4 rounded-lg card-hover">
+                <i class="fas fa-diagram-project text-purple-600 text-2xl mb-2"></i>
+                <h4 class="font-bold">Visual Learning</h4>
+                <p>Interactive diagrams and visuals</p>
+              </div>
+            </div>
+            
+            <div class="mt-8 p-4 bg-indigo-50 rounded-lg border-l-4 border-indigo-500">
+              <p class="italic">"A well-designed database is the foundation of any successful business intelligence solution."</p>
+            </div>
+          </div>
+        `
+      },
+      {
+        title: "💡 Why Was SQL Created?",
+        content: `
+          <div class="space-y-6 fade-in">
+            <div class="text-center mb-6">
+              <img src="https://th.bing.com/th/id/R.9719c1f5e73c0e84b7929848e3039029?rik=lcRfpOKhMnmn4w&riu=http%3a%2f%2funder-the-hood.dev%2fwp-content%2fuploads%2f2022%2f10%2fEdgar-F.-Codd-edited.jpg&ehk=QOV2l4bWB1lxcIZTM85pZ5u%2famhcK7DbNS63NlEYKLU%3d&risl=&pid=ImgRaw&r=0" 
+                   alt="Dr. Edgar F. Codd" 
+                   class="w-full max-w-md mx-auto rounded-lg shadow-lg card-hover border-2 border-indigo-200">
+              <p class="mt-2 text-sm text-gray-600 italic">"The father of the relational database"</p>
+            </div>
+
+            <div class="bg-indigo-50 p-4 rounded-lg border-l-4 border-indigo-500">
+              <h3 class="font-bold text-indigo-800">Dr. Edgar F. Codd: The Visionary</h3>
+              <p>In 1970, IBM researcher Dr. Edgar F. Codd published a revolutionary paper titled <em>"A Relational Model of Data for Large Shared Data Banks"</em>. This paper introduced the concept of relational databases, which would become the foundation for modern database systems.</p>
+              <p>Codd's relational model proposed that data should be organized in tables (relations) with rows and columns, and that relationships between data could be established through common attributes. This was a radical departure from the hierarchical and network database models that dominated at the time.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="bg-white p-4 rounded-lg shadow-sm border">
+                <h4 class="font-bold text-gray-800">Born</h4>
+                <p>August 19, 1923</p>
+              </div>
+              <div class="bg-white p-4 rounded-lg shadow-sm border">
+                <h4 class="font-bold text-gray-800">Died</h4>
+                <p>April 18, 2003</p>
+              </div>
+            </div>
+
+            <ul class="space-y-2 text-sm bg-blue-50 p-4 rounded-lg">
+              <li class="flex items-start">
+                <i class="fas fa-check-circle text-green-500 mt-0.5 mr-2"></i>
+                Later renamed to SQL due to trademark issues
+              </li>
+              <li class="flex items-start">
+                <i class="fas fa-check-circle text-green-500 mt-0.5 mr-2"></i>
+                The goal: Make database queries readable like English sentences
+              </li>
+            </ul>
+
+            <div>
+              <h3 class="font-semibold text-lg mb-3">📅 Timeline of SQL History</h3>
+              <div class="space-y-4 pl-2">
+                <div class="timeline-item">
+                  <div class="font-bold">1970</div>
+                  <div>Edgar Codd publishes relational model paper</div>
+                </div>
+                <div class="timeline-item">
+                  <div class="font-bold">1974</div>
+                  <div>SEQUEL created by Chamberlin and Boyce at IBM</div>
+                </div>
+                <div class="timeline-item">
+                  <div class="font-bold">1979</div>
+                  <div>Oracle releases first commercial SQL database</div>
+                </div>
+                <div class="timeline-item">
+                  <div class="font-bold">1986</div>
+                  <div>SQL becomes ANSI standard</div>
+                </div>
+                <div class="timeline-item">
+                  <div class="font-bold">1989</div>
+                  <div>Microsoft SQL Server 1.0 released</div>
+                </div>
+                <div class="timeline-item">
+                  <div class="font-bold">Today</div>
+                  <div>SQL powers 90%+ of enterprise databases worldwide</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-6 text-center">
+              <img src="https://placehold.co/800x200/e0e7ff/4f46e5?text=SQL+Evolution+Timeline" alt="SQL Evolution" class="w-full max-w-2xl mx-auto rounded-lg shadow card-hover">
+            </div>
+          </div>
+        `
+      },
+      {
+        title: "What is a DBMS?",
+        content: `
+          <div class="space-y-4 fade-in">
+            <div class="text-center mb-4">
+              <img src="https://i.pinimg.com/originals/cd/0c/f5/cd0cf52e29747c9d4fe13b49e4477290.png" 
+                   alt="DBMS Overview" 
+                   class="w-full max-w-md mx-auto rounded-lg shadow card-hover">
+            </div>
+            
+            <p>A <strong>Database Management System (DBMS)</strong> is a software system that enables users to define, create, maintain, and control access to a database.</p>
+            
+            <h3 class="text-xl font-semibold text-indigo-600">Key Components:</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="bg-blue-50 p-4 rounded-lg text-center card-hover">
+                <div class="text-3xl mb-2">📁</div>
+                <h4 class="font-bold">Interrelated Data</h4>
+                <p>Stored manually, computerized, or online</p>
+              </div>
+              <div class="bg-green-50 p-4 rounded-lg text-center card-hover">
+                <div class="text-3xl mb-2">⚙️</div>
+                <h4 class="font-bold">Access Programs</h4>
+                <p>For retrieval, modification, management</p>
+              </div>
+              <div class="bg-purple-50 p-4 rounded-lg text-center card-hover">
+                <div class="text-3xl mb-2">🚀</div>
+                <h4 class="font-bold">Efficient Environment</h4>
+                <p>Easy and effective data usage</p>
+              </div>
+            </div>
+          </div>
+        `
+      },
+      {
+        title: "Applications Areas of DBMS",
+        content: `
+          <div class="fade-in">
+            <div class="text-center mb-6">
+              <img src="https://tse2.mm.bing.net/th/id/OIP.B1A6dXN-5uiDoTWVukGcCAHaD8?rs=1&pid=ImgDetMain" 
+                   alt="DBMS Applications" 
+                   class="w-full max-w-2xl mx-auto rounded-lg shadow card-hover">
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div class="bg-blue-50 p-4 rounded-lg card-hover">
+                <h4 class="font-semibold text-blue-800 flex items-center"><i class="fas fa-university mr-2"></i> Banking</h4>
+                <p>Transaction records and fund transfers.</p>
+              </div>
+              <div class="bg-green-50 p-4 rounded-lg card-hover">
+                <h4 class="font-semibold text-green-800 flex items-center"><i class="fas fa-plane mr-2"></i> Airlines</h4>
+                <p>Reservations and flight schedules.</p>
+              </div>
+              <div class="bg-purple-50 p-4 rounded-lg card-hover">
+                <h4 class="font-semibold text-purple-800 flex items-center"><i class="fas fa-graduation-cap mr-2"></i> Universities</h4>
+                <p>Student registration and grades.</p>
+              </div>
+              <div class="bg-yellow-50 p-4 rounded-lg card-hover">
+                <h4 class="font-semibold text-yellow-800 flex items-center"><i class="fas fa-shopping-cart mr-2"></i> Sales</h4>
+                <p>Customer, product, and purchase records.</p>
+              </div>
+              <div class="bg-red-50 p-4 rounded-lg card-hover">
+                <h4 class="font-semibold text-red-800 flex items-center"><i class="fas fa-industry mr-2"></i> Manufacturing</h4>
+                <p>Production, inventory, orders, and supply chain.</p>
+              </div>
+              <div class="bg-indigo-50 p-4 rounded-lg card-hover">
+                <h4 class="font-semibold text-indigo-800 flex items-center"><i class="fas fa-users mr-2"></i> Human Resources</h4>
+                <p>Employee records, salaries, and tax deductions.</p>
+              </div>
+            </div>
+            <p class="mt-4 italic text-center">Databases are integral to virtually every aspect of modern life.</p>
+          </div>
+        `
+      },
+      {
+        title: "Why do we use DBMS?",
+        content: `
+          <div class="space-y-4 fade-in">
+            <div class="text-center mb-4">
+              <img src="https://tse2.mm.bing.net/th/id/OIP.K0TO2hS679QGfiBpEvt0dAHaEK?rs=1&pid=ImgDetMain" 
+                   alt="Benefits of DBMS" 
+                   class="w-full max-w-lg mx-auto rounded-lg shadow card-hover">
+            </div>
+            
+            <ol class="list-decimal pl-5 space-y-3">
+              <li><strong>Avoid data redundancy & inconsistency</strong>: Centralized updates prevent conflicts.</li>
+              <li><strong>Ease of data access</strong>: Use queries (e.g., SQL) instead of writing new programs.</li>
+              <li><strong>Handle data isolation</strong>: Integrate data from multiple formats/sources.</li>
+              <li><strong>Ensure data integrity</strong>: Enforce constraints (e.g., account balance ≥ 0).</li>
+              <li><strong>Enhance security</strong>: Control access via permissions (e.g., HR sees all salaries, employees see only their own).</li>
+              <li><strong>Support multi-user access</strong>: Concurrency control prevents conflicts (e.g., double-booking airline seats).</li>
+              <li><strong>Guarantee atomicity</strong>: Transactions follow "all or nothing" – if interrupted, roll back to original state.</li>
+            </ol>
+            
+            <div class="mt-6 bg-gradient-to-r from-cyan-500 to-blue-500 text-white p-4 rounded-lg text-center">
+              <h3 class="font-bold text-lg">ACID Properties Ensure Reliable Transactions</h3>
+            </div>
+          </div>
+        `
+      },
+      {
+        title: "ACID Properties",
+        content: `
+          <div class="space-y-4 fade-in">
+            <div class="text-center mb-4">
+              <img src="https://tse2.mm.bing.net/th/id/OIP.lhPFomlCSNgzVLrJHxjz-gHaEj?rs=1&pid=ImgDetMain" 
+                   alt="ACID Properties" 
+                   class="w-full max-w-lg mx-auto rounded-lg shadow card-hover">
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="bg-gradient-to-r from-cyan-50 to-blue-50 p-4 rounded-lg border border-cyan-200 card-hover">
+                <h3 class="font-bold text-cyan-800 flex items-center"><i class="fas fa-bolt mr-2"></i> 1. Atomicity</h3>
+                <p>"All or Nothing" – entire transaction succeeds or fails as a unit.</p>
+              </div>
+              <div class="bg-gradient-to-r from-emerald-50 to-green-50 p-4 rounded-lg border border-emerald-200 card-hover">
+                <h3 class="font-bold text-emerald-800 flex items-center"><i class="fas fa-balance-scale mr-2"></i> 2. Consistency</h3>
+                <p>Database remains valid before and after transaction (e.g., total money unchanged after transfer).</p>
+              </div>
+              <div class="bg-gradient-to-r from-amber-50 to-orange-50 p-4 rounded-lg border border-amber-200 card-hover">
+                <h3 class="font-bold text-amber-800 flex items-center"><i class="fas fa-lock mr-2"></i> 3. Isolation</h3>
+                <p>Concurrent transactions don’t interfere; each appears to run alone.</p>
+              </div>
+              <div class="bg-gradient-to-r from-violet-50 to-purple-50 p-4 rounded-lg border border-violet-200 card-hover">
+                <h3 class="font-bold text-violet-800 flex items-center"><i class="fas fa-database mr-2"></i> 4. Durability</h3>
+                <p>Committed data survives system failures (e.g., power loss).</p>
+              </div>
+            </div>
+          </div>
+        `
+      },
+      {
+        title: "What is RDBMS?",
+        content: `
+          <div class="space-y-4 fade-in">
+            <div class="text-center mb-4">
+              <img src="https://tse4.mm.bing.net/th/id/OIP.QjvriNYiSDqrr-THF-CMFAAAAA?w=413&h=277&rs=1&pid=ImgDetMain" 
+                   alt="RDBMS Structure" 
+                   class="w-full max-w-lg mx-auto rounded-lg shadow card-hover">
+            </div>
+            
+            <p><strong>RDBMS (Relational Database Management System)</strong> is based on E.F. Codd's relational model (1970). It stores data in tables with rows and columns.</p>
+            
+            <h3 class="text-lg font-semibold">Key Characteristics:</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div class="bg-indigo-50 p-3 rounded flex items-start">
+                <i class="fas fa-table text-indigo-600 mt-1 mr-2"></i>
+                <div>
+                  <strong>Tabular format (tables)</strong><br/>
+                  Rows (records) and columns (fields)
+                </div>
+              </div>
+              <div class="bg-indigo-50 p-3 rounded flex items-start">
+                <i class="fas fa-key text-indigo-600 mt-1 mr-2"></i>
+                <div>
+                  <strong>Relationships via Keys</strong><br/>
+                  Primary Key & Foreign Key
+                </div>
+              </div>
+            </div>
+
+            <h3 class="text-lg font-semibold mt-4">Popular RDBMS:</h3>
+            <div class="flex flex-wrap gap-2 justify-center">
+              <span class="bg-gray-100 px-3 py-1 rounded-full text-sm flex items-center"><i class="fab fa-microsoft text-blue-600 mr-1"></i> SQL Server</span>
+              <span class="bg-gray-100 px-3 py-1 rounded-full text-sm flex items-center"><i class="fas fa-database text-red-600 mr-1"></i> Oracle</span>
+              <span class="bg-gray-100 px-3 py-1 rounded-full text-sm flex items-center"><i class="fas fa-database text-blue-500 mr-1"></i> MySQL</span>
+              <span class="bg-gray-100 px-3 py-1 rounded-full text-sm flex items-center"><i class="fas fa-database text-green-600 mr-1"></i> PostgreSQL</span>
+              <span class="bg-gray-100 px-3 py-1 rounded-full text-sm flex items-center"><i class="fas fa-database text-gray-600 mr-1"></i> SQLite</span>
+            </div>
+          </div>
+        `
+      },
+      {
+        title: "DBMS vs RDBMS",
+        content: `
+          <div class="fade-in">
+            <div class="text-center mb-6">
+              <img src="https://www.stechies.com/userfiles/images/DMBS-RDBMS.jpg" 
+                   alt="DBMS vs RDBMS" 
+                   class="w-full max-w-2xl mx-auto rounded-lg shadow card-hover">
+            </div>
+            
+            <div class="overflow-x-auto">
+              <table class="min-w-full bg-white border border-gray-200 rounded-lg">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="py-2 px-4 border-b">Feature</th>
+                    <th class="py-2 px-4 border-b">DBMS</th>
+                    <th class="py-2 px-4 border-b">RDBMS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="py-2 px-4 border-b">Data Storage</td>
+                    <td class="py-2 px-4 border-b">File system</td>
+                    <td class="py-2 px-4 border-b">Tables</td>
+                  </tr>
+                  <tr class="bg-gray-50">
+                    <td class="py-2 px-4 border-b">Relationships</td>
+                    <td class="py-2 px-4 border-b">None</td>
+                    <td class="py-2 px-4 border-b">Yes (via keys)</td>
+                  </tr>
+                  <tr>
+                    <td class="py-2 px-4 border-b">Data Redundancy</td>
+                    <td class="py-2 px-4 border-b">High</td>
+                    <td class="py-2 px-4 border-b">Low (Normalization)</td>
+                  </tr>
+                  <tr class="bg-gray-50">
+                    <td class="py-2 px-4 border-b">Security</td>
+                    <td class="py-2 px-4 border-b">Weak</td>
+                    <td class="py-2 px-4 border-b">Strong</td>
+                  </tr>
+                  <tr>
+                    <td class="py-2 px-4 border-b">Users</td>
+                    <td class="py-2 px-4 border-b">Single-user</td>
+                    <td class="py-2 px-4 border-b">Multi-user</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `
+      },
+      {
+        title: "Database Relationships",
+        content: `
+          <div class="space-y-4 fade-in">
+            <div class="text-center mb-4">
+              <img src="https://blog.devart.com/wp-content/uploads/2021/10/111.drawio.png" 
+                   alt="Database Relationships" 
+                   class="w-full max-w-lg mx-auto rounded-lg shadow card-hover">
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="bg-blue-50 p-4 rounded-lg text-center card-hover">
+                <div class="text-4xl mb-2">1:1</div>
+                <h3 class="font-bold text-blue-800">One-to-One</h3>
+                <p>Person ↔ Passport</p>
+              </div>
+              <div class="bg-green-50 p-4 rounded-lg text-center card-hover">
+                <div class="text-4xl mb-2">1:N</div>
+                <h3 class="font-bold text-green-800">One-to-Many</h3>
+                <p>Department ↔ Employees</p>
+              </div>
+              <div class="bg-purple-50 p-4 rounded-lg text-center card-hover">
+                <div class="text-4xl mb-2">M:N</div>
+                <h3 class="font-bold text-purple-800">Many-to-Many</h3>
+                <p>Students ↔ Courses<br/><small>(via junction table)</small></p>
+              </div>
+            </div>
+          </div>
+        `
+      },
+      {
+        title: "SQL Joins",
+        content: `
+          <div class="space-y-4 fade-in">
+            <div class="text-center mb-4">
+              <img src="https://api.datalemur.com/assets/3efc01d4-26dd-4550-8d7c-aa41d86530c0" 
+                   alt="SQL Joins" 
+                   class="w-full max-w-2xl mx-auto rounded-lg shadow card-hover">
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="bg-cyan-50 p-3 rounded card-hover">
+                <h4 class="font-bold text-cyan-800 flex items-center"><i class="fas fa-exchange-alt mr-2"></i> INNER JOIN</h4>
+                <p>Only matching records from both tables.</p>
+              </div>
+              <div class="bg-sky-50 p-3 rounded card-hover">
+                <h4 class="font-bold text-sky-800 flex items-center"><i class="fas fa-arrow-left mr-2"></i> LEFT JOIN</h4>
+                <p>All from left + matching from right (NULL if no match).</p>
+              </div>
+              <div class="bg-amber-50 p-3 rounded card-hover">
+                <h4 class="font-bold text-amber-800 flex items-center"><i class="fas fa-arrow-right mr-2"></i> RIGHT JOIN</h4>
+                <p>All from right + matching from left (NULL if no match).</p>
+              </div>
+              <div class="bg-violet-50 p-3 rounded card-hover">
+                <h4 class="font-bold text-violet-800 flex items-center"><i class="fas fa-arrows-alt-h mr-2"></i> FULL OUTER JOIN</h4>
+                <p>All records from both tables (NULL where no match).</p>
+              </div>
+            </div>
+
+            <div class="bg-gray-800 text-green-300 p-4 rounded font-mono text-sm overflow-x-auto mt-4">
+              SELECT c.name, a.account_number<br/>
+              FROM Customer c<br/>
+              INNER JOIN Account a ON c.id = a.customer_id;
+            </div>
+          </div>
+        `
+      },
+      {
+        title: "Database Users",
+        content: `
+          <div class="fade-in">
+            <div class="text-center mb-4">
+              <img src="https://placehold.co/700x200/6366f1/white?text=Database+User+Types" alt="Database Users" class="w-full max-w-lg mx-auto rounded-lg shadow card-hover">
+            </div>
+            
+            <pre class="mermaid">${mermaidDiagrams.databaseUsers}</pre>
+            <div class="mt-4 space-y-3">
+              <div class="flex items-start p-3 bg-gray-50 rounded">
+                <i class="fas fa-code text-indigo-600 mt-1 mr-3"></i>
+                <div>
+                  <strong>Application Programmers</strong>: Use DML calls in apps.
+                </div>
+              </div>
+              <div class="flex items-start p-3 bg-gray-50 rounded">
+                <i class="fas fa-terminal text-green-600 mt-1 mr-3"></i>
+                <div>
+                  <strong>Sophisticated Users</strong>: Write SQL queries directly.
+                </div>
+              </div>
+              <div class="flex items-start p-3 bg-gray-50 rounded">
+                <i class="fas fa-microchip text-purple-600 mt-1 mr-3"></i>
+                <div>
+                  <strong>Specialized Users</strong>: Use non-traditional DB apps (e.g., CAD).
+                </div>
+              </div>
+              <div class="flex items-start p-3 bg-gray-50 rounded">
+                <i class="fas fa-mouse-pointer text-blue-600 mt-1 mr-3"></i>
+                <div>
+                  <strong>Naïve Users</strong>: Use pre-built interfaces (e.g., web forms, bank tellers).
+                </div>
+              </div>
+            </div>
+          </div>
+        `
+      },
+      {
+        title: "Application Architectures",
+        content: `
+          <div class="fade-in">
+            <div class="text-center mb-4">
+              <img src="https://tse4.mm.bing.net/th/id/OIP.0lXEk04tsG0j-yP1EsUJRAHaH1?rs=1&pid=ImgDetMain" 
+                   alt="Application Architectures" 
+                   class="w-full max-w-2xl mx-auto rounded-lg shadow card-hover">
+            </div>
+            
+            <pre class="mermaid">${mermaidDiagrams.twoThreeTier}</pre>
+            <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="bg-blue-50 p-3 rounded card-hover">
+                <h4 class="font-bold text-blue-800">Two-Tier</h4>
+                <p>Client ↔ Database Server<br/><em>Used in desktop/internal apps</em></p>
+              </div>
+              <div class="bg-green-50 p-3 rounded card-hover">
+                <h4 class="font-bold text-green-800">Three-Tier</h4>
+                <p>Client ↔ App Server ↔ DB Server<br/><em>Used in web apps</em></p>
+              </div>
+            </div>
+          </div>
+        `
+      },
+      {
+        title: "Overall System Structure",
+        content: `
+          <div class="space-y-4 fade-in">
+            <div class="text-center mb-4">
+              <img src="https://placehold.co/700x200/ef4444/white?text=DBMS+System+Architecture" alt="System Structure" class="w-full max-w-lg mx-auto rounded-lg shadow card-hover">
+            </div>
+            
+            <h3 class="font-semibold text-lg">A. Query Processor</h3>
+            <ul class="list-disc pl-5 text-sm">
+              <li>DML queries, DDL interpreter, query evaluation engine</li>
+            </ul>
+
+            <h3 class="font-semibold text-lg">B. Storage Manager</h3>
+            <ul class="list-disc pl-5 text-sm">
+              <li>Authorization, transaction manager, file manager, buffer manager</li>
+            </ul>
+
+            <h3 class="font-semibold text-lg">C. Disk Storage</h3>
+            <ul class="list-disc pl-5 text-sm">
+              <li>Data, indices, data dictionary</li>
+            </ul>
+
+            <pre class="mermaid mt-4">${mermaidDiagrams.systemStructure}</pre>
+          </div>
+        `
+      },
+      {
+        title: "Database Administrator (DBA)",
+        content: `
+          <div class="space-y-4 fade-in">
+            <div class="text-center mb-4">
+              <img src="https://us.valenta.io/wp-content/uploads/2022/06/Business-Outsource-a-Database-Administrator-2.jpg" 
+                   alt="Database Administrator" 
+                   class="w-full max-w-lg mx-auto rounded-lg shadow card-hover">
+            </div>
+            
+            <h3 class="font-semibold text-lg">Key Responsibilities:</h3>
+            <ol class="list-decimal pl-5 space-y-2">
+              <li><strong>Schema Definition</strong>: Create tables, define relationships, set indices.</li>
+              <li><strong>Security & Authorization</strong>: Manage user permissions and data access.</li>
+              <li><strong>Maintenance</strong>: Ensure integrity, backups, recovery, and performance.</li>
+            </ol>
+            <pre class="mermaid mt-4">${mermaidDiagrams.systemStructure}</pre>
+          </div>
+        `
+      },
+      {
+        title: "DDL vs DML",
+        content: `
+          <div class="fade-in">
+            <div class="text-center mb-4">
+              <img src="https://placehold.co/800x200/8b5cf6/white?text=DDL+vs+DML" alt="DDL vs DML" class="w-full max-w-2xl mx-auto rounded-lg shadow card-hover">
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div class="bg-indigo-50 p-4 rounded-lg card-hover">
+                <h3 class="font-bold text-indigo-800 flex items-center"><i class="fas fa-cogs mr-2"></i> DDL (Data Definition Language)</h3>
+                <p>Defines database structure.</p>
+                <ul class="list-disc pl-5 mt-2 text-sm">
+                  <li>CREATE</li>
+                  <li>ALTER</li>
+                  <li>DROP</li>
+                </ul>
+              </div>
+              <div class="bg-rose-50 p-4 rounded-lg card-hover">
+                <h3 class="font-bold text-rose-800 flex items-center"><i class="fas fa-edit mr-2"></i> DML (Data Manipulation Language)</h3>
+                <p>Manages data content.</p>
+                <ul class="list-disc pl-5 mt-2 text-sm">
+                  <li>SELECT</li>
+                  <li>INSERT</li>
+                  <li>UPDATE</li>
+                  <li>DELETE</li>
+                </ul>
+              </div>
+            </div>
+            <pre class="mermaid">${mermaidDiagrams.ddlDml}</pre>
+          </div>
+        `
+      },
+      {
+        title: "Data Normalization",
+        content: `
+          <div class="space-y-4 fade-in">
+            <div class="text-center mb-4">
+              <img src="https://tse4.mm.bing.net/th/id/OIP.HrmuUNRxSG_soYhMyTsMPwHaFj?rs=1&pid=ImgDetMain" 
+                   alt="Database Normalization" 
+                   class="w-full max-w-lg mx-auto rounded-lg shadow card-hover">
+            </div>
+            
+            <h3 class="font-semibold">Goal:</h3>
+            <p>Reduce redundancy, ensure integrity, avoid anomalies.</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div class="bg-yellow-50 p-3 rounded text-center card-hover">
+                <strong>1NF</strong><br/>Atomic values only
+              </div>
+              <div class="bg-green-50 p-3 rounded text-center card-hover">
+                <strong>2NF</strong><br/>No partial dependency
+              </div>
+              <div class="bg-blue-50 p-3 rounded text-center card-hover">
+                <strong>3NF</strong><br/>No transitive dependency
+              </div>
+            </div>
+
+            <pre class="mermaid mt-4">${mermaidDiagrams.normalization}</pre>
+          </div>
+        `
+      },
+      {
+        title: "Hands-on SQL Exercise",
+        content: `
+          <div class="space-y-4 fade-in">
+            <div class="text-center mb-4">
+              <img src="https://placehold.co/700x200/6366f1/white?text=SQL+Hands-On+Practice" alt="SQL Practice" class="w-full max-w-lg mx-auto rounded-lg shadow card-hover">
+            </div>
+            
+            <h3 class="font-semibold">1. Create Table (DDL)</h3>
+            <div class="bg-gray-800 text-green-300 p-3 rounded font-mono text-sm">
+              CREATE TABLE Students (<br/>
+              &nbsp;&nbsp;StudentID int PRIMARY KEY,<br/>
+              &nbsp;&nbsp;Name varchar(50),<br/>
+              &nbsp;&nbsp;Age int,<br/>
+              &nbsp;&nbsp;Course varchar(50)<br/>
+              );
+            </div>
+
+            <h3 class="font-semibold">2. Insert Data (DML)</h3>
+            <div class="bg-gray-800 text-green-300 p-3 rounded font-mono text-sm">
+              INSERT INTO Students VALUES<br/>
+              (1, 'Aung Aung', 20, 'Database'),<br/>
+              (2, 'Su Su', 21, 'Networking');
+            </div>
+
+            <h3 class="font-semibold">3. Query Data (DML)</h3>
+            <div class="bg-gray-800 text-green-300 p-3 rounded font-mono text-sm">
+              SELECT * FROM Students;<br/>
+              SELECT Name FROM Students WHERE Age = 20;
+            </div>
+          </div>
+        `
+      },
+      {
+        title: "SQL Aggregate Functions",
+        content: `
+          <div class="space-y-4 fade-in">
+            <div class="text-center mb-4">
+              <img src="https://placehold.co/800x200/10b981/white?text=SQL+Aggregate+Functions" alt="Aggregate Functions" class="w-full max-w-2xl mx-auto rounded-lg shadow card-hover">
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-2 text-center">
+              <div class="bg-cyan-100 p-2 rounded feature-icon">COUNT()</div>
+              <div class="bg-emerald-100 p-2 rounded feature-icon">SUM()</div>
+              <div class="bg-amber-100 p-2 rounded feature-icon">AVG()</div>
+              <div class="bg-rose-100 p-2 rounded feature-icon">MIN()</div>
+              <div class="bg-violet-100 p-2 rounded feature-icon">MAX()</div>
+            </div>
+
+            <h3 class="font-semibold mt-4">GROUP BY & HAVING</h3>
+            <div class="bg-gray-800 text-green-300 p-3 rounded font-mono text-sm">
+              SELECT Course, COUNT(*)<br/>
+              FROM Students<br/>
+              GROUP BY Course<br/>
+              HAVING COUNT(*) >= 2;
+            </div>
+
+            <h3 class="font-semibold mt-6">SQL Query Execution Order</h3>
+            <pre class="mermaid">${mermaidDiagrams.sqlWorkflow}</pre>
+          </div>
+        `
+      },
+      {
+        title: "🎉 Thank You!",
+        content: `
+          <div class="thank-you-container fade-in">
+            <!-- Confetti Animation -->
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+            
+            <!-- Floating Emojis -->
+            <div class="floating-emoji">🎊</div>
+            <div class="floating-emoji">🎈</div>
+            <div class="floating-emoji">🌟</div>
+            <div class="floating-emoji">🎯</div>
+            <div class="floating-emoji">🏆</div>
+            
+            <h1 class="thank-you-title">Thank You!</h1>
+            
+            <div class="max-w-2xl mx-auto">
+              <div class="welcome-card rounded-2xl p-8 mb-6 shadow-xl">
+                <div class="w-32 h-32 bg-white bg-opacity-80 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <i class="fas fa-graduation-cap text-6xl text-white"></i>
+                </div>
+                <h2 class="text-3xl font-bold mb-4">Congratulations on Completing!</h2>
+                <p class="text-xl opacity-90 mb-4">You've successfully journeyed through the world of DBMS & SQL</p>
+                <p class="text-lg opacity-80">Presented by Kaung Myat Kyaw | BI Executive</p>
+              </div>
+              
+              <!-- Learning Stats -->
+              <div class="stats-grid">
+                <div class="stat-card">
+                  <span class="stat-number">15</span>
+                  <div class="stat-label">Topics Covered</div>
+                </div>
+                <div class="stat-card">
+                  <span class="stat-number">100%</span>
+                  <div class="stat-label">Completion Rate</div>
+                </div>
+                <div class="stat-card">
+                  <span class="stat-number">∞</span>
+                  <div class="stat-label">Possibilities</div>
+                </div>
+                <div class="stat-card">
+                  <span class="stat-number">⭐</span>
+                  <div class="stat-label">Achievement Unlocked</div>
+                </div>
+              </div>
+              
+              <!-- Message Section -->
+              <div class="bg-white rounded-xl p-6 shadow-lg mb-6">
+                <h3 class="text-2xl font-bold text-gray-800 mb-4">What's Next?</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
+                  <div class="bg-blue-50 p-4 rounded-lg">
+                    <i class="fas fa-code text-blue-600 text-2xl mb-2"></i>
+                    <h4 class="font-bold">Practice SQL Queries</h4>
+                    <p>Apply your knowledge to real-world scenarios</p>
+                  </div>
+                  <div class="bg-green-50 p-4 rounded-lg">
+                    <i class="fas fa-database text-green-600 text-2xl mb-2"></i>
+                    <h4 class="font-bold">Explore Advanced Topics</h4>
+                    <p>Learn about optimization, indexing, and more</p>
+                  </div>
+                  <div class="bg-purple-50 p-4 rounded-lg">
+                    <i class="fas fa-project-diagram text-purple-600 text-2xl mb-2"></i>
+                    <h4 class="font-bold">Build Projects</h4>
+                    <p>Create your own database-driven applications</p>
+                  </div>
+                  <div class="bg-orange-50 p-4 rounded-lg">
+                    <i class="fas fa-certificate text-orange-600 text-2xl mb-2"></i>
+                    <h4 class="font-bold">Get Certified</h4>
+                    <p>Validate your skills with industry certifications</p>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Action Buttons -->
+              <div class="flex flex-wrap justify-center gap-4">
+                <button onclick="goToPage(0)" class="pulse-button">
+                  <i class="fas fa-home mr-2"></i> Start Over
+                </button>
+                <button onclick="shareAchievement()" class="pulse-button">
+                  <i class="fas fa-share-alt mr-2"></i> Share Achievement
+                </button>
+              </div>
+              
+              <!-- Final Message -->
+              <div class="mt-8 p-6 bg-gradient-to-r from-purple-100 to-pink-100 rounded-xl border-l-4 border-purple-500">
+                <p class="text-lg italic text-gray-700">
+                  "The beautiful thing about learning is that nobody can take it away from you." - B.B. King
+                </p>
+                <p class="mt-4 text-center text-gray-600">
+                  <strong>Keep learning, keep growing, and keep querying! 🚀</strong>
+                </p>
+              </div>
+            </div>
+          </div>
+        `
+      }
+    ];
+
+    let currentPage = 0;
+
+    // DOM Elements
+    const contentArea = document.getElementById('content-area');
+    const sidebarList = document.getElementById('sidebar-list');
+    const menuList = document.getElementById('menu-list');
+    const menuToggle = document.getElementById('menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    // Initialize navigation lists
+    function initNavLists() {
+      sidebarList.innerHTML = '';
+      menuList.innerHTML = '';
+      pages.forEach((page, index) => {
+        const liSidebar = document.createElement('li');
+        liSidebar.innerHTML = `<button onclick="goToPage(${index})" class="w-full text-left px-3 py-2 rounded text-sm text-gray-600 hover:bg-gray-100">${page.title}</button>`;
+        sidebarList.appendChild(liSidebar);
+
+        const liMobile = document.createElement('button');
+        liMobile.className = 'w-full text-left px-3 py-2 rounded hover:bg-gray-100';
+        liMobile.textContent = page.title;
+        liMobile.onclick = () => goToPage(index);
+        menuList.appendChild(liMobile);
+      });
+    }
+
+    // Render current page
+    function renderPage(index) {
+      const page = pages[index];
+      contentArea.innerHTML = `
+        <div class="mb-6">
+          <h2 class="text-2xl font-bold text-gray-800">${page.title}</h2>
+          <div class="w-12 h-1 bg-indigo-500 rounded-full mt-2"></div>
+        </div>
+        <div class="prose prose-indigo max-w-none">${page.content}</div>
+        <div class="flex justify-between mt-8 pt-6 border-t border-gray-200">
+          <button onclick="prevPage()" ${index === 0 ? 'disabled class="text-gray-400 cursor-not-allowed"' : 'class="text-indigo-600 hover:bg-indigo-50 flex items-center"'} >
+            <i class="fas fa-chevron-left mr-2"></i> Previous
+          </button>
+          <span class="text-gray-500 self-center">
+            ${index + 1} / ${pages.length}
+          </span>
+          <button onclick="nextPage()" ${index === pages.length - 1 ? 'disabled class="text-gray-400 cursor-not-allowed"' : 'class="text-indigo-600 hover:bg-indigo-50 flex items-center"'} >
+            Next <i class="fas fa-chevron-right ml-2"></i>
+          </button>
+        </div>
+      `;
+      // Re-initialize mermaid after content loads
+      setTimeout(() => {
+        if (window.mermaid) {
+          const mermaidDivs = contentArea.querySelectorAll('.mermaid');
+          mermaidDivs.forEach(div => {
+            div.removeAttribute('data-processed');
+          });
+          window.mermaid.init(undefined, mermaidDivs);
+        }
+        // Trigger fade-in animation
+        const fadeIns = contentArea.querySelectorAll('.fade-in');
+        fadeIns.forEach((el, i) => {
+          el.style.opacity = '0';
+          setTimeout(() => {
+            el.classList.remove('fade-in');
+            el.style.opacity = '1';
+          }, i * 100);
+        });
+      }, 100);
+    }
+
+    // Navigation functions
+    function nextPage() {
+      if (currentPage < pages.length - 1) {
+        currentPage++;
+        renderPage(currentPage);
+        closeMobileMenu();
+      }
+    }
+
+    function prevPage() {
+      if (currentPage > 0) {
+        currentPage--;
+        renderPage(currentPage);
+        closeMobileMenu();
+      }
+    }
+
+    function goToPage(index) {
+      currentPage = index;
+      renderPage(currentPage);
+      closeMobileMenu();
+    }
+
+    function closeMobileMenu() {
+      mobileMenu.classList.add('hidden');
+    }
+
+    // Event listeners
+    menuToggle.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+
+    // Initialize
+    initNavLists();
+    renderPage(currentPage);
+
+    // Expose functions globally for inline onclick
+    window.nextPage = nextPage;
+    window.prevPage = prevPage;
+    window.goToPage = goToPage;
+    window.setTheme = setTheme;
+    window.toggleFullscreen = toggleFullscreen;
+
+    // Theme management
+    let currentTheme = 'ocean';
+
+    function setTheme(theme) {
+      const body = document.body;
+      const themeButtons = document.querySelectorAll('.theme-btn');
+      
+      // Remove all theme classes
+      body.className = body.className.replace(/theme-\w+/g, '');
+      
+      // Add new theme class
+      body.classList.add(`theme-${theme}`);
+      body.classList.add('min-h-screen', 'flex', 'flex-col');
+      
+      // Update active button
+      themeButtons.forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.classList.contains(`theme-${theme}`)) {
+          btn.classList.add('active');
+        }
+      });
+      
+      currentTheme = theme;
+      
+      // Save theme preference
+      localStorage.setItem('selectedTheme', theme);
+    }
+
+    // Full screen management
+    let isFullscreen = false;
+
+    function toggleFullscreen() {
+      const body = document.body;
+      const icon = document.getElementById('fullscreen-icon');
+      const text = document.getElementById('fullscreen-text');
+      
+      isFullscreen = !isFullscreen;
+      
+      if (isFullscreen) {
+        body.classList.add('fullscreen-mode');
+        icon.className = 'fas fa-compress';
+        text.textContent = 'Exit Full Screen';
+        
+        // Request browser fullscreen
+        if (body.requestFullscreen) {
+          body.requestFullscreen();
+        } else if (body.webkitRequestFullscreen) {
+          body.webkitRequestFullscreen();
+        } else if (body.msRequestFullscreen) {
+          body.msRequestFullscreen();
+        }
+      } else {
+        body.classList.remove('fullscreen-mode');
+        icon.className = 'fas fa-expand';
+        text.textContent = 'Full Screen';
+        
+        // Exit browser fullscreen
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+          document.msExitFullscreen();
+        }
+      }
+      
+      // Save fullscreen state
+      localStorage.setItem('isFullscreen', isFullscreen);
+    }
+
+    // Handle fullscreen change events
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+    document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+
+    function handleFullscreenChange() {
+      const isBrowserFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement || 
+                                  document.mozFullScreenElement || document.msFullscreenElement);
+      
+      if (!isBrowserFullscreen && isFullscreen) {
+        // Browser exited fullscreen, update UI
+        toggleFullscreen();
+      }
+    }
+
+    // Load saved preferences
+    function loadPreferences() {
+      const savedTheme = localStorage.getItem('selectedTheme');
+      if (savedTheme && savedTheme !== currentTheme) {
+        setTheme(savedTheme);
+      }
+      
+      const savedFullscreen = localStorage.getItem('isFullscreen') === 'true';
+      if (savedFullscreen && !isFullscreen) {
+        toggleFullscreen();
+      }
+    }
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      // F11 for fullscreen
+      if (e.key === 'F11') {
+        e.preventDefault();
+        toggleFullscreen();
+      }
+      
+      // Ctrl/Cmd + Shift + T for theme switcher
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'T') {
+        e.preventDefault();
+        const themes = ['ocean', 'sunset', 'forest', 'fire', 'aurora', 'galaxy', 'candy', 'midnight'];
+        const currentIndex = themes.indexOf(currentTheme);
+        const nextIndex = (currentIndex + 1) % themes.length;
+        setTheme(themes[nextIndex]);
+      }
+      
+      // Escape to exit fullscreen
+      if (e.key === 'Escape' && isFullscreen) {
+        toggleFullscreen();
+      }
+    });
+
+    // Load preferences on initialization
+    loadPreferences();
+
+    // Share achievement function
+    function shareAchievement() {
+      const text = "🎉 I just completed the DBMS & SQL Guide! Check out this amazing learning resource!";
+      const url = window.location.href;
+      
+      if (navigator.share) {
+        navigator.share({
+          title: 'DBMS & SQL Guide - Completed!',
+          text: text,
+          url: url
+        }).catch(err => console.log('Error sharing:', err));
+      } else {
+        // Fallback for browsers that don't support Web Share API
+        const shareText = `${text} ${url}`;
+        navigator.clipboard.writeText(shareText).then(() => {
+          alert('Achievement text copied to clipboard! Share it with your friends! 🎉');
+        }).catch(err => console.log('Error copying text:', err));
+      }
+    }
+
+    // Expose share function globally
+    window.shareAchievement = shareAchievement;
+  </script>
+</body>
+</html>
+
